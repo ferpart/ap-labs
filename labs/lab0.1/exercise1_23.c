@@ -1,9 +1,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-void rcomment(int c, FILE *doc, FILE *fDoc);
-void incomment(FILE *doc);
-void echo_quote(int c, FILE *doc, FILE *fDoc);
+void rdComment(int c, FILE *doc, FILE *fDoc);
+void inComment(FILE *doc);
+void extComment(int c, FILE *doc, FILE *fDoc);
 
 int main(void)
 {
@@ -30,23 +30,23 @@ int main(void)
 	int c;
 
     	while((c= getc(document)) !=EOF){
-		rcomment(c, document, finalDoc);
+		rdComment(c, document, finalDoc);
 	}
 
     	return 0;
 }
 
-void rcomment(int c, FILE *doc, FILE *fDoc)
+void rdComment(int c, FILE *doc, FILE *fDoc)
 {
     int d;
     if( c == '/')
  {
         if((d=getc(doc))=='*')
-         incomment(doc);
+         inComment(doc);
         else if( d == '/')
         {
             putc(c, fDoc);
-            rcomment(d, doc, fDoc);
+            rdComment(d, doc, fDoc);
         }
         else 
         {
@@ -55,12 +55,12 @@ void rcomment(int c, FILE *doc, FILE *fDoc)
         }
     }
     else if( c == '\''|| c == '"')
-        echo_quote(c, doc, fDoc);
+        extComment(c, doc, fDoc);
     else
         putc(c, fDoc);
 }
 
-void incomment(FILE *doc)
+void inComment(FILE *doc)
 {
     int c,d;
      
@@ -74,7 +74,7 @@ void incomment(FILE *doc)
     }
 }
 
-void echo_quote(int c, FILE *doc, FILE *fDoc)
+void extComment(int c, FILE *doc, FILE *fDoc)
 {
     int d;
 
