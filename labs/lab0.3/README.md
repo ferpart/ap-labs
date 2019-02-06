@@ -79,9 +79,12 @@ https://github.com/adonovan/gopl.io/blob/master/ch6/geometry/geometry.go
 2. **Paste** at:
 
 https://play.golang.org/
+
 3. Change **X** and **Y** to **x** and **y** in **Point** structure
 4. Create the **X** and **Y** methods
+
 5. Add a function **printPoint** that recieves a **Point** and prints **x** and **y**
+
 6. Add **main()** to use the **printFunction**
 
 #### The code taken from Alan Donovan's Github page is the following:
@@ -130,7 +133,7 @@ func (path Path) Distance() float64 {
 //!-path
 ```
 
-### Finally in order to run the programs, one needs to salect any of the go files and run them in [The Go Playground]{https://play.golang.org/}
+### Finally in order to run the programs, one needs to salect any of the go files and run them in [The Go Playground](https://play.golang.org/)
 
 This can be done following the next link:
 
