@@ -1,6 +1,6 @@
-##First code challenge##
+## First code challenge
 
-###For this challenge we were assigned the following:###
+### For this challenge we were assigned the following:
 
 Given a string, find the length of the longest substring without repeating characters.
 
@@ -26,7 +26,7 @@ Explanation: The answer is "wke", with the length of 3.
 Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
 ```
 
-###How to run/ Basic Description###
+### How to run/ Basic Description
 
 As the file is made in c, to compile you just need to type the command: 
 ```
