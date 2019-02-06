@@ -2,7 +2,7 @@
 
 For this lab we have been assigned to do 3 different exercises to learn about the Go language. 
 
-### Firstly the Slices problem taken from: [Exercise: Slices]{https://tour.golang.org/moretypes/18} 
+### Firstly the Slices problem taken from: [Exercise: Slices](https://tour.golang.org/moretypes/18) 
 
 #### The problem states
 
@@ -35,7 +35,7 @@ func main() {
 }
 ```
 
-### Secondly the Maps problem taken from: [Exercise: Maps]{https://tour.golang.org/moretypes/23} 
+### Secondly the Maps problem taken from: [Exercise: Maps](https://tour.golang.org/moretypes/23) 
 
 #### The problem states
 
@@ -68,23 +68,72 @@ func main() {
 }
 ```
 
-### Thirdly changing a code from a git repository taken from: [Alan Donovan's geometry.go]{https://github.com/adonovan/gopl.io/blob/master/ch6/geometry/geometry.go} 
+### Thirdly changing a code from a git repository taken from: [Alan Donovan's geometry.go](https://github.com/adonovan/gopl.io/blob/master/ch6/geometry/geometry.go)
 
 #### The problem states
 
 1. **Copy** the code from:
+
 https://github.com/adonovan/gopl.io/blob/master/ch6/geometry/geometry.go
 
 2. **Paste** at:
+
 https://play.golang.org/
 3. Change **X** and **Y** to **x** and **y** in **Point** structure
 4. Create the **X** and **Y** methods
 5. Add a function **printPoint** that recieves a **Point** and prints **x** and **y**
 6. Add **main()** to use the **printFunction**
 
+#### The code taken from Alan Donovan's Github page is the following:
+```
+// Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
+// License: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+// See page 156.
+
+// Package geometry defines simple types for plane geometry.
+//!+point
+package geometry
+
+import "math"
+
+type Point struct{ X, Y float64 }
+
+// traditional function
+func Distance(p, q Point) float64 {
+	return math.Hypot(q.X-p.X, q.Y-p.Y)
+}
+
+// same thing, but as a method of the Point type
+func (p Point) Distance(q Point) float64 {
+	return math.Hypot(q.X-p.X, q.Y-p.Y)
+}
+
+//!-point
+
+//!+path
+
+// A Path is a journey connecting the points with straight lines.
+type Path []Point
+
+// Distance returns the distance traveled along the path.
+func (path Path) Distance() float64 {
+	sum := 0.0
+	for i := range path {
+		if i > 0 {
+			sum += path[i-1].Distance(path[i])
+		}
+	}
+	return sum
+}
+
+//!-path
+```
+
 ### Finally in order to run the programs, one needs to salect any of the go files and run them in [The Go Playground]{https://play.golang.org/}
 
 This can be done following the next link:
+
 https://play.golang.org/
 
 
