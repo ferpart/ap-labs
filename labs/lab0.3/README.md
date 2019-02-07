@@ -139,5 +139,5 @@ This can be done following the next link:
 
 https://play.golang.org/
 
-
+The user just needs to select the code and copy/paste it in the textbox.
  
