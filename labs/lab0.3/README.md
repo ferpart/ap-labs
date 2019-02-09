@@ -14,7 +14,7 @@ The choice of image is up to you. Interesting functions include (x+y)/2, x*y, an
 
 (Use uint8(intValue) to convert between types.) 
 
-```
+```go
 package main
 
 import "golang.org/x/tour/pic"
@@ -43,7 +43,7 @@ Implement WordCount. It should return a map of the counts of each “word” in 
 
 You might find strings.Fields helpful. 
 
-```
+```go
 package main
 
 import (
@@ -88,7 +88,7 @@ https://play.golang.org/
 6. Add **main()** to use the **printFunction**
 
 #### The code taken from Alan Donovan's Github page is the following:
-```
+```go
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
@@ -139,5 +139,5 @@ This can be done following the next link:
 
 https://play.golang.org/
 
-
+The user just needs to select the code and copy/paste it in the textbox.
  
