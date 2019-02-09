@@ -4,47 +4,69 @@
 
 
 #include <stdio.h>
-#include <string.h>
+//#include <string.h>
 
-void append(char* s, char c) {
-        int len = strlen(s);
-        s[len] = c;
-        s[len+1] = '\0';
-}
+/*int strlen(char *str){
+        int length=0;
+        for (int i=0; str[i] != '\0'; i++)
+		length++;
+        return length;
 
-int counter(char* string)
-{
-	int count = 0;
-	int max = 0;
-	char existing[26];
-	for(int i = 0; i<26; i= i+1){
-		for(int x =0; x<26; x = x+1){
-			if (string[i]!=existing[x]){
-				count=count+1;
-				append (existing, string[i]);
-			}else{
-				if (count>max){
-					max=count;
-				}
-				count=0;
+}*/
+
+
+int maxSubsting(char *string){
+	
+	char temp[10];
+	int flag=0;
+	int tempint=0;
+	int k =0;
+	temp[0]=" ";
+
+	for (int i =0; string[i]!= '\0'; i++){
+		for (int j = 0; temp[j] !='\0'; j++){
+			if (temp[j]!=string[i])
+				flag=1;
+			else{
+				flag=0;
+				break;
 			}
 		}
-	}
-								
+		if (flag){
+			temp[k]=string[i];
+			temp[k+1]=" ";
+			k++;
+			if (k>tempint)
+				tempint=k;
+		}else{
 
+			temp[0]=string[i];
+			temp[1]=" ";		
+			k=0;
+			
+		
+		}
+		/*if (k>tempint){
+			tempint = k;
+			k=0;
+		}*/
+	}
+	/*if (k>tempint){
+		tempint = k;	
+	}*/
+
+	printf("%d\n", tempint);
+	return tempint;
 }
 
 
-int main(void)
-{
-	char entry[26];
-	int finalCount;
+/*int main(int argc, char *argv[]){
+	maxSubsting(argv[1]);
+	return 0;
+}*/
 
-	printf("give me a string\n");
-	scanf("%s" , entry);
 
-	finalCount = counter(entry);
-
-	printf("the substring is %1i characters ", finalCount);
-
+int main(){
+	maxSubsting("testtesta");
+	return 0;
 }
