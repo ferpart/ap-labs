@@ -16,7 +16,7 @@ make
 ./mycat file
 ```
 
-**A testing file named *`large file`* has been added for testing purposes**
+**A testing file named *`largefile`* has been added for testing purposes**
 
 As for the statistics of the running of my program, it appears that mycat is 50% slower than the original cat in my implementation. 
 
