@@ -16,16 +16,16 @@ make
 ./mycat file
 ```
 
-**A testing file named *large file* has been added for testing purposes**
+**A testing file named *`large file`* has been added for testing purposes**
 
 As for the statistics of the running of my program, it appears that mycat is 50% slower than the original cat in my implementation. 
 
 The following screenshots show the comparisson between cat and my cat:
 
-### This is cat ran using `time cat largefile` 
+### This is cat ran using *`time cat largefile`* 
 ![alt-text](https://github.com/ferpart/ap-labs/blob/master/labs/lab1.1/img/cat.png "Original cat execution time on largefile file")
 
-### This is mycat ran using `time ./mycat largefile`
+### This is mycat ran using *`time ./mycat largefile`*
 
 ![alt-text](https://github.com/ferpart/ap-labs/blob/master/labs/lab1.1/img/mycat.png "My cat execution time on largefile file") 
 
