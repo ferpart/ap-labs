@@ -1,6 +1,6 @@
-# Lab 1.1 - mycat
+# Lab 1.1 - mycat 
 
-The overall task for this assignment is to write a new version of the cat command using the following specifications.
+The overall task for this assignment is to write a new version of the cat command using the following specifications taken from [here](https://github.com/CodersSquad/ap-labs/tree/master/labs/lab1.1 "Lab 1.1 - mycat by obedmr").
 
 * Rewrite the cat.c program by using `read`, `write`, `open` and close instead of their library equivalents.
 * Generate a report with performance metrics between the existing `cat.c` and your `mycat.c`. The format of the report is free, you can add charts or whatever helps to understand the speed of both approaches.
