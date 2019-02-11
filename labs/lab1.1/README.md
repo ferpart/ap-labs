@@ -29,3 +29,4 @@ The following screenshots show the comparisson between cat and my cat:
 
 ![alt-text](https://github.com/ferpart/ap-labs/blob/master/labs/lab1.1/img/mycat.png "My cat execution time on largefile file") 
 
+Overall even though my implementation of the cat code is slower than the original cat for the specific file that was tested, there may be cases in which my code may run faster than the original implementation of cat. 
