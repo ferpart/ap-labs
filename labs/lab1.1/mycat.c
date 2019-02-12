@@ -39,7 +39,7 @@ void main (int argc, char **argv)
 		char *buffer;
 		buffer=calloc(nbytes, sizeof(char));
 		while (read(fd, buffer, nbytes-1) > 0){
-			printf("%s", buffer);
+			write(1, buffer, nbytes);
 			memset(buffer, '\0', nbytes);
 		}
 		close(fd);
