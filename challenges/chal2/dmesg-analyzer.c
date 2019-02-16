@@ -12,8 +12,8 @@
 #define maxlogLen 50
 #define logStart 15
 
-#define row 481
-#define col 20
+#define row 200
+#define col 100
 
 void analizeLog(char *logFile, char *report);
 
@@ -41,18 +41,18 @@ void analizeLog(char *logFile, char *report)
 	int fd,
 	    fdN,
 	    j=0,
-	    k=0,
-	    p=0,
 	    flag=0,
 	    jump=0,
+	    login=0,
 	    arrayin=1,
 	    arrflag=0;
 
 	char *buffer, 
 	     *temp,
-	     *tempdesc,
-	     *tempfail,
-	     catarray[row][col][maxlogLen];
+	     *temptime,
+	     *tempdesc;
+	     
+	char catarray[row][col][nBytes];
 
 	buffer=calloc(nBytes, sizeof(char));
 	buffer[nBytes]='\0';
@@ -63,14 +63,15 @@ void analizeLog(char *logFile, char *report)
 	tempdesc=calloc(nBytes, sizeof(char));
 	tempdesc[nBytes]='\0';
 
-	tempfail=tempdesc;
-	
+	temptime=calloc(logStart, sizeof(char));
+	temptime[logStart]='\0';
+
 	memset(catarray, '\0', sizeof catarray);
 	
 	strcpy(catarray[0][0], "General:");
 
 	fd = open(logFile, O_RDONLY);
-	fdN= open("report.txt", O_WRONLY | O_APPEND | O_CREAT, 0644);
+	fdN= open("report.txt", O_WRONLY | O_TRUNC | O_CREAT, 0644);
 
 	if (fd == -1)
        		exit(ERROR);
@@ -81,13 +82,23 @@ void analizeLog(char *logFile, char *report)
 		{
 			if (buffer[i]!='\n')
 			{
-				if (i <=maxlogLen+logStart && i>=logStart && 
-						flag!=1)
+				if (i <logStart-1)
 				{
-					temp[j]=buffer[i];
+					temptime[login]=buffer[i];
+					login++;
+				}
 
-					if (buffer[i]==':' && (buffer[i+1]==' ' 
-							|| buffer[i+1]=='\n'))		
+				if (i>=logStart)
+				{	
+					if (flag !=1 && i<=maxlogLen-1)
+						temp[j]=buffer[i];
+
+					tempdesc[j]=buffer[i];
+
+					if (((buffer[i]==':' && (buffer[i+1]==' ' 
+							|| buffer[i+1]=='\n'))
+							&& i<=maxlogLen+logStart)
+					   		&& flag!=1)		
 					{
 							
 						flag=1;
@@ -101,75 +112,65 @@ void analizeLog(char *logFile, char *report)
 							}else
 							{
 								arrflag=0;
+								memset(tempdesc, '\0', nBytes);
+								j=0;
+								j--;
 								break;
 							}
 
 						}
 						if (arrflag)
 						{
+							//printf("%s\n", temp);
 							strcpy(catarray[arrayin]
 							       [0], temp);
 							memset(catarray[arrayin
 								+1][0], '\0',
-								maxlogLen);	
+								nBytes);	
 
 							arrflag=0;
 							arrayin++;
+							memset(tempdesc, '\0', nBytes);
+							j=0;
+							j--;
 						}
+
 					}
 					j++;
 
-				}else if (flag)
-				{
-					
-					tempdesc[k]=buffer[i+1];
-					k++;		
 				}
-				if (i>=logStart ){
-						
-					tempfail[p]=buffer[i];
-					p++;
-				}
-				
-
-
 			}
 			else
 			{
-				if (flag == 0)
-				{
-					tempfail[p+1]='\n';
-					tempdesc=tempfail;
-				}
-				for (int l=0; l<=row; l++){
-					//printf("%s\n" , tempdesc);
+				
+				for (int l=1; l<=row-1; l++){
 					if (strcmp(temp, catarray[l][0])==0)
 					{
-						for (int m=1; m <= col; m++)
+						for (int m=1; m <= col-1; m++)
 						{
 							//printf("%d\n", m);
-							if (*catarray[l][m]=='\0'
-							   )
-							{ 
-								strcpy(catarray[
-									l][m], 
-									tempdesc
-								      );
-								
+							if (*catarray[l][m]=='\0')
+							{
+								memset(catarray[l][m], '\0', nBytes);
+								strcpy(catarray[l][m], temptime);
+								strcat(catarray[l][m], " ");
+								strcat(catarray[l][m], tempdesc);
 								break;
 							}
 						}
-					}else
+						break;
+					}
+					else if (l==row-1)
 					{
-						for (int m=1; m <= col; m++)
+						for (int m=1; m <= col-1; m++)
 						{
 							if (*catarray[0][m]=='\0'
 							   )
 							{
-								strcpy(catarray
-								       [0][m],
-								       tempdesc
-								       );
+								memset(catarray[0][m], '\0', nBytes);
+								strcpy(catarray[0][m], temptime);
+								strcat(catarray[0][m], " ");
+								strcat(catarray[0][m], tempdesc);
 								break;
 							}
 						}
@@ -179,8 +180,8 @@ void analizeLog(char *logFile, char *report)
 
 				flag=0,
 				j=0,
-				k=0;
-				//printf("%s", tempfail);
+				login=0;
+
 				jump = (i*sizeof(char)-strlen(buffer)*
 						sizeof(char))+1;
 				
@@ -188,28 +189,28 @@ void analizeLog(char *logFile, char *report)
 
 				memset(temp, '\0' ,maxlogLen);
 				memset(tempdesc, '\0', nBytes);
+				memset(temptime, '\0', logStart);
 				
-				tempfail=tempdesc;
-
 				break;
 			}
 		}
 		
 		memset(buffer, '\0', nBytes);	
     	}
-	
-	for (int r=0; r<=row; r++)
+	for (int r=0; r<=row-1; r++)
 	{
-		write(fdN, catarray[r][0], strlen(catarray[r][0]));
-		write(fdN, "\n", 1);
-		//printf("%s\n", catarray[r][0]);
-		/*for (int c=1; c<=col; c++)
+		if (*catarray[r][0]!='\0'){
+			write(fdN, catarray[r][0], strlen(catarray[r][0]));
+			write(fdN, "\n", 1);
+		}
+		for (int c=1; c<=col-1; c++)
 		{
-			write(fdN, "	", 1);
-		        write(fdN, catarray[r][c], strlen(catarray[r][c]));
-			//write(fdN, "\n", 1);
-			//printf("	%s\n", catarray[r][c]);	
-		}*/
+			if (*catarray[r][c]!='\0')
+			{
+		        	write(fdN, catarray[r][c], strlen(catarray[r][c]));
+				write(fdN, "\n", 1);
+			}
+		}
 	}
 	close(fd);
 	close(fdN);
