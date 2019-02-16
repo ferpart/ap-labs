@@ -49,6 +49,7 @@ void analizeLog(char *logFile, char *report)
 
 	char *buffer, 
 	     *temp,
+	     *temptemp,
 	     *temptime,
 	     *tempdesc;
 	     
@@ -59,6 +60,9 @@ void analizeLog(char *logFile, char *report)
 
 	temp=calloc(maxlogLen, sizeof(char));
 	temp[maxlogLen]='\0';
+
+	temptemp=calloc(maxlogLen, sizeof(char));
+	temptemp[maxlogLen]='\0';
 
 	tempdesc=calloc(nBytes, sizeof(char));
 	tempdesc[nBytes]='\0';
@@ -95,14 +99,13 @@ void analizeLog(char *logFile, char *report)
 
 					tempdesc[j]=buffer[i];
 
-					if (((buffer[i]==':' && (buffer[i+1]==' ' 
-							|| buffer[i+1]=='\n'))
-							&& i<=maxlogLen+logStart)
-					   		&& flag!=1)		
+					if (((buffer[i]==':' && (buffer[i+1]==' ' || buffer[i+1]=='\n')) 
+							     && i<=maxlogLen+logStart)
+					   		     && flag!=1)		
 					{
 							
 						flag=1;
-						for (int l=0; l<=row; l++)
+						for (int l=0; l<row; l++)
 						{
 							if(strcmp(temp, 
 								  catarray[l][0] 
@@ -122,11 +125,8 @@ void analizeLog(char *logFile, char *report)
 						if (arrflag)
 						{
 							//printf("%s\n", temp);
-							strcpy(catarray[arrayin]
-							       [0], temp);
-							memset(catarray[arrayin
-								+1][0], '\0',
-								nBytes);	
+							strcpy(catarray[arrayin][0], temp);
+							memset(catarray[arrayin+1][0], '\0',nBytes);	
 
 							arrflag=0;
 							arrayin++;
@@ -143,18 +143,20 @@ void analizeLog(char *logFile, char *report)
 			else
 			{
 				
-				for (int l=1; l<=row-1; l++){
+				for (int l=1; l<row; l++){
 					if (strcmp(temp, catarray[l][0])==0)
 					{
-						for (int m=1; m <= col-1; m++)
+						for (int m=1; m < col; m++)
 						{
-							//printf("%d\n", m);
 							if (*catarray[l][m]=='\0')
 							{
-								memset(catarray[l][m], '\0', nBytes);
-								strcpy(catarray[l][m], temptime);
-								strcat(catarray[l][m], " ");
-								strcat(catarray[l][m], tempdesc);
+								if (tempdesc[0]!='\0'){
+									memset(catarray[l][m], '\0', nBytes);
+									strcpy(catarray[l][m], "  ");
+									strcat(catarray[l][m], temptime);
+									strcat(catarray[l][m], " ");
+									strcat(catarray[l][m], tempdesc);
+								}
 								break;
 							}
 						}
@@ -162,16 +164,41 @@ void analizeLog(char *logFile, char *report)
 					}
 					else if (l==row-1)
 					{
-						for (int m=1; m <= col-1; m++)
+						if ((tempdesc[0]==' ')&& (tempdesc[1]==' '))
 						{
-							if (*catarray[0][m]=='\0'
-							   )
+                                 			for (int l=1; l<row; l++){                      
+                                         			if (strcmp(temptemp, catarray[l][0])==0)    
+                                         			{                                       
+                                                 			for (int m=1; m < col; m++)     
+                                                 			{                               
+                                                         			if (*catarray[l][m]=='\0')
+                                                         			{                       
+                                                                 			memset(catarray[l][m], '\0', nBytes);
+											strcpy(catarray[l][m], "  ");
+                                                                 			strcat(catarray[l][m], temptime);
+                                                                 			strcat(catarray[l][m], " ");
+                                                                 			strcat(catarray[l][m], tempdesc);
+                                                                 			break;          
+                                                         			}                       
+                                                 			}                               
+                                                 		break;                          
+                                         			} 
+							}
+							strcpy(temp, temptemp);
+							memset(temptemp, '\0', maxlogLen);
+						}else
+						{
+							for (int m=1; m < col; m++)
 							{
-								memset(catarray[0][m], '\0', nBytes);
-								strcpy(catarray[0][m], temptime);
-								strcat(catarray[0][m], " ");
-								strcat(catarray[0][m], tempdesc);
-								break;
+								if (*catarray[0][m]=='\0')
+								{
+									memset(catarray[0][m], '\0', nBytes);
+									strcpy(catarray[0][m], "  ");
+									strcat(catarray[0][m], temptime);
+									strcat(catarray[0][m], " ");
+									strcat(catarray[0][m], tempdesc);
+									break;
+								}
 							}
 						}
 					}				
@@ -186,6 +213,8 @@ void analizeLog(char *logFile, char *report)
 						sizeof(char))+1;
 				
 				lseek(fd, jump , SEEK_CUR);
+				
+				strcpy(temptemp, temp);
 
 				memset(temp, '\0' ,maxlogLen);
 				memset(tempdesc, '\0', nBytes);
