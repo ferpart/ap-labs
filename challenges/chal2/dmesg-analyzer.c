@@ -12,6 +12,9 @@
 #define maxlogLen 50
 #define logStart 15
 
+#define row 481
+#define col 20
+
 void analizeLog(char *logFile, char *report);
 
 int main(int argc, char **argv)
@@ -34,77 +37,182 @@ void analizeLog(char *logFile, char *report)
 
     	// Implement your solution here.
     
-    	int fd;
-	//char * line = NULL;
-	//size_t len = 0;
 	
+	int fd,
+	    fdN,
+	    j=0,
+	    k=0,
+	    p=0,
+	    flag=0,
+	    jump=0,
+	    arrayin=1,
+	    arrflag=0;
+
+	char *buffer, 
+	     *temp,
+	     *tempdesc,
+	     *tempfail,
+	     catarray[row][col][maxlogLen];
+
+	buffer=calloc(nBytes, sizeof(char));
+	buffer[nBytes]='\0';
+
+	temp=calloc(maxlogLen, sizeof(char));
+	temp[maxlogLen]='\0';
+
+	tempdesc=calloc(nBytes, sizeof(char));
+	tempdesc[nBytes]='\0';
+
+	tempfail=tempdesc;
+	
+	memset(catarray, '\0', sizeof catarray);
+	
+	strcpy(catarray[0][0], "General:");
+
 	fd = open(logFile, O_RDONLY);
+	fdN= open("report.txt", O_WRONLY | O_APPEND | O_CREAT, 0644);
+
 	if (fd == -1)
        		exit(ERROR);
-
-	char *buffer, *temp;
-	buffer=calloc(nBytes, sizeof(char));
-	temp=calloc(maxlogLen, sizeof(char));
-	temp[nBytes]='\0';
-	buffer[maxlogLen]='\0';
-	//int i=0, 
-	int j=0,
-	    k=0, 
-	    flag=0,
-	    jump=0;
-    	
+	
 	while (read(fd, buffer, nBytes-1) > 0)
 	{
     		for (int i=0; buffer[i]!='\0'; i++)
 		{
-			//printf("%d num test\n", i );
-			//printf("%c\n", buffer[i+1]);
 			if (buffer[i]!='\n')
 			{
-				//printf("%c", buffer[i]);
 				if (i <=maxlogLen+logStart && i>=logStart && 
 						flag!=1)
 				{
-					//printf("test\n");
 					temp[j]=buffer[i];
-					//printf("%c\n", temp[j]);
+
 					if (buffer[i]==':' && (buffer[i+1]==' ' 
 							|| buffer[i+1]=='\n'))		
 					{
 							
 						flag=1;
-						printf("%s\n", temp);
+						for (int l=0; l<=row; l++)
+						{
+							if(strcmp(temp, 
+								  catarray[l][0] 
+								  )!= 0)
+							{
+								arrflag=1;
+							}else
+							{
+								arrflag=0;
+								break;
+							}
+
+						}
+						if (arrflag)
+						{
+							strcpy(catarray[arrayin]
+							       [0], temp);
+							memset(catarray[arrayin
+								+1][0], '\0',
+								maxlogLen);	
+
+							arrflag=0;
+							arrayin++;
+						}
 					}
 					j++;
 
+				}else if (flag)
+				{
+					
+					tempdesc[k]=buffer[i+1];
+					k++;		
 				}
-
-				/*if (flag)
-				{	
-					//printf("test");
-					printf("%s\n", temp);
-				}*/
-
-
-			}else
-			{
-				flag=0,
-				j=0;
+				if (i>=logStart ){
+						
+					tempfail[p]=buffer[i];
+					p++;
+				}
 				
-				jump = (i*sizeof(char)-strlen(buffer)*sizeof(char))+1;
+
+
+			}
+			else
+			{
+				if (flag == 0)
+				{
+					tempfail[p+1]='\n';
+					tempdesc=tempfail;
+				}
+				for (int l=0; l<=row; l++){
+					//printf("%s\n" , tempdesc);
+					if (strcmp(temp, catarray[l][0])==0)
+					{
+						for (int m=1; m <= col; m++)
+						{
+							//printf("%d\n", m);
+							if (*catarray[l][m]=='\0'
+							   )
+							{ 
+								strcpy(catarray[
+									l][m], 
+									tempdesc
+								      );
+								
+								break;
+							}
+						}
+					}else
+					{
+						for (int m=1; m <= col; m++)
+						{
+							if (*catarray[0][m]=='\0'
+							   )
+							{
+								strcpy(catarray
+								       [0][m],
+								       tempdesc
+								       );
+								break;
+							}
+						}
+					}				
+				}	
+
+
+				flag=0,
+				j=0,
+				k=0;
+				//printf("%s", tempfail);
+				jump = (i*sizeof(char)-strlen(buffer)*
+						sizeof(char))+1;
 				
 				lseek(fd, jump , SEEK_CUR);
 
 				memset(temp, '\0' ,maxlogLen);
+				memset(tempdesc, '\0', nBytes);
 				
+				tempfail=tempdesc;
+
 				break;
 			}
 		}
 		
 		memset(buffer, '\0', nBytes);	
-    	}	
+    	}
 	
+	for (int r=0; r<=row; r++)
+	{
+		write(fdN, catarray[r][0], strlen(catarray[r][0]));
+		write(fdN, "\n", 1);
+		//printf("%s\n", catarray[r][0]);
+		/*for (int c=1; c<=col; c++)
+		{
+			write(fdN, "	", 1);
+		        write(fdN, catarray[r][c], strlen(catarray[r][c]));
+			//write(fdN, "\n", 1);
+			//printf("	%s\n", catarray[r][c]);	
+		}*/
+	}
 	close(fd);
+	close(fdN);
     printf("Report is generated at: [%s]\n", report);
 }
 
