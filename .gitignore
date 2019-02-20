@@ -1,3 +1,8 @@
+
+# Created by https://www.gitignore.io/api/c,go
+# Edit at https://www.gitignore.io/?templates=c,go
+
+### C ###
 # Prerequisites
 *.d
 
@@ -6,7 +11,6 @@
 *.ko
 *.obj
 *.elf
-*.out
 
 # Linker output
 *.ilk
@@ -29,6 +33,13 @@
 *.so.*
 *.dylib
 
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
 
 # Debug files
 *.dSYM/
@@ -44,3 +55,18 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+### Go ###
+# Binaries for programs and plugins
+*.exe~
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+
+### Go Patch ###
+/vendor/
+/Godeps/
+
+# End of https://www.gitignore.io/api/c,go
