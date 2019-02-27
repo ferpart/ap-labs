@@ -9,11 +9,15 @@
 #define ERROR 1
 #define SUCCESS 0
 
-#define maxWordLen 30
+#define maxWordLen 31
 #define maxColLen 1
+
+#define STOPWORDS 154
 
 void analizeWords(char *file);
 int wordCounter(char *file);
+int stopWordCheck(char *word);
+char *strlowr(char *str);
 
 int main(int argc, char **argv)
 {
@@ -48,6 +52,7 @@ int wordCounter(char *file)
 {
 	int fd,
 	    numOfWords,
+	    lineNumber,
 	    i,
 	    j,
 	    nlFix,
@@ -59,11 +64,11 @@ int wordCounter(char *file)
 	buffer=calloc(nBytes, sizeof(char));
 	buffer[nBytes]='\0';
 	
-	word=calloc(nBytes, sizeof(char));
-	word[0]='\0';
-	word[nBytes]='\0';
+	word=calloc(maxWordLen, sizeof(char));
+	word[maxWordLen]='\0';
 
 	numOfWords=0;
+	lineNumber=0;
 	j=0;
 
 	fd = open(file, O_RDONLY);
@@ -76,13 +81,23 @@ int wordCounter(char *file)
 		//printf("%c", buffer[0]);
 		for (i=0; buffer[i]!='\n'; i++)
 		{
-			/*}else if (word[0]!='\0' && isspace(buffer[i])){
-				//printf("%s\n", word);
-				numOfWords++;
-				//memset(word,'\0', maxWordLen+1);
+			if (isalpha(buffer[i]) && buffer[i+1]!='\'' &&
+						  (isspace(buffer[i+1]) ||
+						   ispunct(buffer[i+1]))){
+				//printf("test");
+				word[j] = buffer[i];
+				if (stopWordCheck(strlowr(word))!=0){
+					printf("%s\n", strlowr(word));
+					numOfWords++;
+				}
 				j=0;
-			}*/
-			word[i]=buffer[i];
+				memset(word, '\0', maxWordLen);
+
+			}else if (isalpha(buffer[i]) || (isalpha(buffer[i-1]) &&
+							buffer[i]=='\'')){
+				word[j] = buffer[i];
+				j++;
+			}	
 
 		}
 		
@@ -91,19 +106,72 @@ int wordCounter(char *file)
 			//printf("%s\n", buffer);
 			//printf("test\n");
 			nlFix=3;
+			lineNumber++;
 		}else
-			nlFix=2;
+			nlFix=1;
 
-		numOfWords++;
+		lineNumber++;
 		jump=((i*sizeof(char)-strlen(buffer)*sizeof(char))+nlFix);
 
 		lseek(fd, jump, SEEK_CUR);
-		printf("%s\n", word);
+		//printf("%s\n", word);
 		memset(buffer, '\0', nBytes);
-		memset(word, '\0', nBytes); 
+		memset(word, '\0', maxWordLen); 
 	}
+	printf("%d is the number of words\n", numOfWords);
 
-	return numOfWords;
+	return lineNumber;
+}
+
+int stopWordCheck(char *word){
+
+	int flag = 1;
+	char *stopWordList[STOPWORDS] = {"a", "about", "above", "after", 
+		"again", "against", "all", "am", "an", "and", "any", "are", 
+		"as", "at", "be", "because", "been", "before", "being", "below",
+	       	"between", "both", "but", "by", "could", "did", "do", "does", 
+		"doing", "down", "during", "each", "few", "for", "from", 
+		"further", "had", "has", "have", "having", "he", "he'd", 
+		"he'll", "he's", "her", "here", "here's", "hers", "herself", 
+		"him", "himself", "his", "how", "how's", "i", "i'd", "i'll", 
+		"i'm", "i've", "if", "in", "into", "is", "it", "it's", "its", 
+		"itself", "let's", "me", "more", "most", "my", "myself", "nor",
+	       	"of", "on", "once", "only", "or", "other", "ought", "our", 
+		"ours", "ourselves", "out", "over", "own", "same", "she", 
+		"she'd", "she'll", "she's", "should","so", "some", "such", 
+		"than", "that", "that's", "the", "their", "theirs", "them", 
+		"themselves", "then", "there", "there's", "these", "they", 
+		"they'd", "they'll", "they're", "they've","this", "those", 
+		"through", "to", "too", "under", "until", "up", "very", "was", 
+		"we", "we'd", "we'll", "we're", "we've", "were", "what", 
+		"what's", "when", "when's", "where", "where's","which", "while", 
+		"who", "who's", "whom", "why", "why's", "with", "would", "you", 
+		"you'd", "you'll", "you're", "you've", "your", "yours", 
+		"yourself", "yourselves"};	
+	
+	for (int i=0; i<STOPWORDS-1; i++){
+		if (strcmp(word, stopWordList[i])==0){
+			//printf("test\n");
+			flag=0;
+			break;		
+		}
+	}	
+	if (flag==0)
+		return 0;
+	return 1;
+
+}
+
+char *strlowr(char *str)
+{
+  unsigned char *p = (unsigned char *)str;
+
+  while (*p) {
+     *p = tolower((unsigned char)*p);
+      p++;
+  }
+
+  return str;
 }
 
 
