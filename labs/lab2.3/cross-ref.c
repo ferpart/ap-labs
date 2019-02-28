@@ -12,10 +12,12 @@
 #define maxWordLen 31
 #define maxColLen 1
 
+#define WORDSSTORED 4000
+
 #define STOPWORDS 154
 
-void analizeWords(char *file);
-int wordCounter(char *file);
+void wordCounter(char *file);
+void listPrinter(char *list[WORDSSTORED][2]);
 int stopWordCheck(char *word);
 char *strlowr(char *str);
 
@@ -27,31 +29,14 @@ int main(int argc, char **argv)
 		return ERROR;
 	}
 
-	analizeWords(argv[1]);
+	wordCounter(argv[1]);
 
 	return 0;
 }
 
-void analizeWords(char *file)
+void wordCounter(char *file)
 {
 	int fd,
-	    fdS,
-	    maxWords;
-
-	char *buffer,
-	     *bufferS;
-
-	maxWords=wordCounter(file);
-	printf("%d\n", maxWords);
-	//char wordArray[maxWords][maxColLen][maxWordLen];
-
-
-}
-
-int wordCounter(char *file)
-{
-	int fd,
-	    numOfWords,
 	    lineNumber,
 	    i,
 	    j,
@@ -59,16 +44,28 @@ int wordCounter(char *file)
 	    jump;
 
 	char *buffer,
-	     *word;
+	     *word,
+	     *lineNumberStr,
+	     *wordLower;
+
+	char *wordDictionary[WORDSSTORED][2];
 	
+	for (int k=0; k<WORDSSTORED-1; k++)
+		wordDictionary[k][0]=calloc(1, sizeof(char));
+
 	buffer=calloc(nBytes, sizeof(char));
 	buffer[nBytes]='\0';
 	
 	word=calloc(maxWordLen, sizeof(char));
 	word[maxWordLen]='\0';
+	
+	lineNumberStr=calloc(4, sizeof(char));
+	lineNumberStr[4]='\0';
 
-	numOfWords=0;
-	lineNumber=0;
+	wordLower=calloc(maxWordLen, sizeof(char));
+	wordLower[maxWordLen]='\0';
+
+	lineNumber=1;
 	j=0;
 
 	fd = open(file, O_RDONLY);
@@ -78,20 +75,38 @@ int wordCounter(char *file)
 
 	while (read(fd, buffer, nBytes-1) > 0)
 	{
-		//printf("%c", buffer[0]);
 		for (i=0; buffer[i]!='\n'; i++)
 		{
 			if (isalpha(buffer[i]) && buffer[i+1]!='\'' &&
 						  (isspace(buffer[i+1]) ||
 						   ispunct(buffer[i+1]))){
-				//printf("test");
 				word[j] = buffer[i];
-				if (stopWordCheck(strlowr(word))!=0){
-					printf("%s\n", strlowr(word));
-					numOfWords++;
+
+				wordLower=strlowr(word);
+
+				if (stopWordCheck(wordLower)!=0){
+
+					sprintf(lineNumberStr, "%d", lineNumber);
+					for (int k=0; k<WORDSSTORED-1; k++){
+						if (strcmp(wordDictionary[k][0], wordLower)){
+							if (wordDictionary[k][0][0]=='\0'){
+								wordDictionary[k][0]=calloc(strlen(wordLower), sizeof(char));
+								wordDictionary[k][1]=calloc(nBytes , sizeof(char));
+								strcpy(wordDictionary[k][0], wordLower);
+								strcpy(wordDictionary[k][1], lineNumberStr);
+								break;
+							}
+						}else{
+							strcat(wordDictionary[k][1], ", "); 
+							strcat(wordDictionary[k][1], lineNumberStr);
+							break;
+						}
+					}
+					memset(lineNumberStr, '\0', 4);
 				}
 				j=0;
 				memset(word, '\0', maxWordLen);
+				memset(wordLower, '\0', maxWordLen);
 
 			}else if (isalpha(buffer[i]) || (isalpha(buffer[i-1]) &&
 							buffer[i]=='\'')){
@@ -109,18 +124,16 @@ int wordCounter(char *file)
 			lineNumber++;
 		}else
 			nlFix=1;
-
+		
 		lineNumber++;
+
 		jump=((i*sizeof(char)-strlen(buffer)*sizeof(char))+nlFix);
 
 		lseek(fd, jump, SEEK_CUR);
-		//printf("%s\n", word);
 		memset(buffer, '\0', nBytes);
 		memset(word, '\0', maxWordLen); 
 	}
-	printf("%d is the number of words\n", numOfWords);
-
-	return lineNumber;
+	listPrinter(wordDictionary);
 }
 
 int stopWordCheck(char *word){
@@ -174,5 +187,14 @@ char *strlowr(char *str)
   return str;
 }
 
+void listPrinter(char *list[WORDSSTORED][2]){
 
-
+	for (int i=0; i<WORDSSTORED-1; i++){
+		if (list[i][0][0]!='\0'){
+		printf("%-20s:", list[i][0]);
+		printf("%s\n", list[i][1]);
+		}else{
+			break;
+		}
+	}
+}
