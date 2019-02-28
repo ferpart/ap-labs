@@ -7,8 +7,7 @@ Write a cross-referencer in C that prints a list of all words in a document, and
 words like `the`, `and`, and so on.
 
 The noise words that were chosen have been taken from the following code at 
-[Yoast's gitHub page](https://github.com/Yoast/YoastSEO.js/blob/develop/src/
-		      config/stopwords.js "YoastSEO.js")
+[Yoast's gitHub page](https://github.com/Yoast/YoastSEO.js/blob/develop/src/config/stopwords.js "YoastSEO.js")
 
 The following is a javascript script with said stop words:
 
