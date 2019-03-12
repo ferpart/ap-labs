@@ -34,3 +34,5 @@ make
 
 ./testLogger
 ```
+
+Lines will be written in the syslog in this lab, the syslog can be found at /var/log/syslog
