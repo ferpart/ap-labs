@@ -1,5 +1,5 @@
 CC       = gcc
-CFLAGS   = -Wall -g -w
+CFLAGS   = -Wall
 LDFLAGS  =
 OBJFILES = logger.o base64.o
 TARGET   = base64
