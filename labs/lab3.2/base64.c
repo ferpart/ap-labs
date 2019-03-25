@@ -1,18 +1,39 @@
+/*                                                                              
+ *Encoding and decoding implementation with the use of signal interruptions (Ctrl+c)
+ *                                                                              
+ *Base64 c algorithm taken from: https://en.wikibooks.org/wiki/Algorithm_Implementation/Miscellaneous/Base64
+ *                                                                              
+ */
+
+#include <stdio.h>
 #include <inttypes.h>
 #include <string.h>
 #include "logger.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/stat.h> 
 
 #define WHITESPACE 64
 #define EQUALS     65
 #define INVALID    66
+#define encode "--encode"
+#define decode "--decode"
+#define ENCODED_FILE "encoded.txt"
+#define DECODED_FILE "decoded.txt"
 
-int base64encode(const void* data_buf, size_t dataLength, char* result, size_t resultSize);
-int base64decode (char *in, size_t inLen, unsigned char *out, size_t *outLen);
+int base64encode(const void* data_buf, size_t dataLength, char* result, size_t resultSize),
+    base64decode (char *in, size_t inLen, unsigned char *out, size_t *outLen),
+    fileOpener(char *fileName),
+    fileWriter(char *fileName);
 
-int main (int argc, char *argv[])
-{
-
-}
+void usage(),
+     progress(int signal),
+     fileSize(char *fileName);
 
 static const unsigned char d[] = {
     66,66,66,66,66,66,66,66,66,66,64,66,66,66,66,66,66,66,66,66,66,66,66,66,66,
@@ -27,6 +48,80 @@ static const unsigned char d[] = {
     66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,66,
     66,66,66,66,66,66
 };
+
+struct stat sizeStore;
+
+unsigned long finalFileSize,
+	      workingSize;
+
+int main (int argc, char **argv)
+{
+	int fdOpen,
+	    fdWrite,
+	    readLength,
+	    bytesRead;
+
+	char *readBuffer;
+	
+	if (signal(SIGINT, progress)== SIG_ERR)
+		warnf("Signal map wasn't successful");
+	
+	if (argc != 3)
+		usage();
+
+	if (strcmp(argv[1], "--encode") == 0)
+	{
+		int writeLength;
+		char *writeBuffer;
+
+		fdOpen = fileOpener(argv[2]);	
+		fdWrite = fileWriter(ENCODED_FILE);		
+
+		readLength = 3;
+		writeLength = 4;
+
+		readBuffer = calloc(readLength, sizeof(char));
+		writeBuffer = calloc(writeLength, sizeof(char));
+		
+		while ((bytesRead = read(fdOpen, readBuffer, readLength)) > 0 )
+		{
+			base64encode(readBuffer, readLength, writeBuffer, writeLength);	
+			write(fdWrite, writeBuffer, writeLength);
+			workingSize+=bytesRead;
+			memset(readBuffer, '\0', readLength);
+		}
+	}	
+	else if (strcmp(argv[1], "--decode") == 0)
+	{
+		size_t *writeLength;
+		unsigned char *writeBuffer;
+
+		fdOpen = fileOpener(argv[2]);
+		fdWrite= fileWriter(DECODED_FILE);
+
+		readLength = 4;
+		*writeLength = 3;
+		
+		readBuffer = calloc(readLength, sizeof(char));
+		writeBuffer = calloc(*writeLength, sizeof(char));
+		while ((bytesRead = read(fdOpen, readBuffer, readLength)) > 0 )
+		{
+			base64decode(readBuffer, readLength, writeBuffer, writeLength);	
+			write(fdWrite, writeBuffer, *writeLength);
+			workingSize+=bytesRead;
+			memset(readBuffer, '\0', readLength);
+		}
+	}
+	else
+	{
+		usage();
+	}
+	close(fdOpen);
+	close(fdWrite);
+
+	return 0;
+
+}
 
 int base64encode(const void* data_buf, size_t dataLength, char* result, size_t resultSize)
 {
@@ -148,3 +243,53 @@ int base64decode (char *in, size_t inLen, unsigned char *out, size_t *outLen) {
     return 0;
 }
 
+void usage()
+{
+	warnf("Valid commands are %s or %s\n", encode, decode);
+	exit(EXIT_FAILURE);
+}
+
+void progress(int signal)
+{
+	unsigned long percent = (workingSize * 100) / finalFileSize; 
+	infof("Progress is of %d%\n", percent);
+}
+
+int fileOpener(char *fileName)
+{
+	int fd;
+	fd = open(fileName, O_RDONLY);
+
+	if (fd == -1)
+	{
+		errorf("%s was not found or couldn't be opened", fileName);
+		close(fd);
+		exit(EXIT_FAILURE);
+	}
+
+	fileSize(fileName);
+	
+	return fd;
+}
+
+int fileWriter(char *fileName)
+{
+	int fd;
+
+	fd = open(fileName, O_WRONLY | O_CREAT, 0755);
+
+	if (fd == -1)
+	{
+		errorf("%s couldn't be created", fileName);
+		close(fd);
+		exit(EXIT_FAILURE);
+	}
+
+	return fd;
+}
+
+void fileSize(char *fileName)
+{
+	stat(fileName, &sizeStore);
+	finalFileSize =  sizeStore.st_size;
+}
