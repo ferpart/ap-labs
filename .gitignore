@@ -6,6 +6,10 @@
 # Prerequisites
 *.d
 
+# Pre indent files
+*.c~
+*.go~
+
 # Object files
 *.o
 *.ko
