@@ -89,3 +89,21 @@ Useful links
 - https://github.com/adonovan/gopl.io/tree/master/ch8/chat
 - https://github.com/adonovan/gopl.io/tree/master/ch8/netcat3
 - https://golang.org/pkg/flag/
+
+# How to run
+
+```
+#First open the server in the Server folder with the following
+
+go run server.go -host <host> -port <port>
+# In case no arguments are typed, host and port are defaulted do "localhost:9000"
+
+#Secondly on a different terminal open the client in the Client folder with the following
+
+go run client.go -user <user> -server <server>
+#In case no arguments are typed, user is defaulted to "defaultUser", and server is defaulted to "localhost:9000"
+```
+
+# Extras
+
+A `/help` command was added in case one forgets any of the programmed commands.
