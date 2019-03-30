@@ -48,3 +48,17 @@ Useful links and resources
 - https://www.tldp.org/LDP/Linux-Filesystem-Hierarchy/html/proc.html
 - `man proc` command
 - `/proc/<PID>/status` per-process file
+
+# How to run
+
+```
+#To compile the program the user first needs to run the following command
+make
+
+#To run the prigram the user needs to run the following command
+
+sudo run ./mytop
+
+#If the user wishes to save a copy of what is displayed on screen using a system interruption will do the job [ctrl-c]
+#For exiting the program the user needs to use a system quit interruption [ctrl-\]
+```
