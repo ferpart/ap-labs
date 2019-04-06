@@ -1,6 +1,8 @@
 Lab 4.1 - Mutexes and Conditional Variables
 ===========================================
 
+For this assignment we were required to fig several bugs in the lab 4.1 copied from [here](https://github.com/CodersSquad/ap-labs/tree/master/labs/lab4.1 "CodersSquad Lab 4.1") 
+
 Mutexes
 -------
 1. Review, compile and run the `dotprod_serial.c` program. As its name implies, it is serial - no threads are created.
@@ -27,8 +29,17 @@ General Requirements and Considerations
 - Don't forget to handle errors properly.
 - Coding best practices implementation will be also considered.
 
+# How to build/run
 
-Submission Details
-==================
+```bash
+#To build the code, the user needs to do the following command
+make
 
-Read [Classify API](../../classify.md)
+#To run the code the user can use the following for bug1.c, bug4.c, and bug6.c accordingly
+./bug1
+./bug4
+./bug6
+
+#To clean all files added by the make command, the user can use
+make clean
+```
