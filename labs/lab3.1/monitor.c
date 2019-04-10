@@ -82,7 +82,7 @@ static int display_info(const char *fpath, const struct stat *sb, int tflag,
 	       		struct FTW *ftwbuf)
 {
 	int notiWatch = inotify_add_watch(inotifFd, fpath, IN_CREATE | IN_CREATE|
-					IN_MOVED_TO | IN_MOVED_FROM);
+					IN_MOVED_TO | IN_MOVED_FROM | IN_DELETE);
 
 	if (notiWatch == -1) {
 		errorf("Watch for inotify not added");
