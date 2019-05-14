@@ -63,6 +63,7 @@ dkms.conf
 ### Go ###
 # Binaries for programs and plugins
 *.exe~
+*.go~
 
 # Test binary, built with `go test -c`
 *.test
